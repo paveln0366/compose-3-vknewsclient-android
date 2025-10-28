@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -75,18 +74,21 @@ private fun PostHeader() {
         ) {
             Text(
                 text = "/dev/null",
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onSurface
+//                color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "14:00",
-                color = MaterialTheme.colorScheme.onSecondary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+//                color = MaterialTheme.colorScheme.onTertiary
             )
         }
         Icon(
             imageVector = Icons.Rounded.MoreVert,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSecondary
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+//            tint = MaterialTheme.colorScheme.onSecondary
         )
     }
 }
@@ -121,12 +123,14 @@ private fun IconWithText(
         Icon(
             painter = painterResource(iconResId),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSecondary
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+//            tint = MaterialTheme.colorScheme.onTertiary
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = text,
-            color = MaterialTheme.colorScheme.onSecondary
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+//            color = MaterialTheme.colorScheme.onTertiary
         )
     }
 }
