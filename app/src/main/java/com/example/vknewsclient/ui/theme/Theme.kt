@@ -16,7 +16,7 @@ private val DarkColorScheme = darkColorScheme(
     secondary = Black900,
     tertiary = Black900,
     background = Black900,
-    surface = Black900,
+    surface = GrayDark,
     onPrimary = Color.White,
     onSecondary = Black500,
     onTertiary = Color.White,
@@ -29,7 +29,7 @@ private val LightColorScheme = lightColorScheme(
     secondary = Color.White,
     tertiary = Color.White,
     background = Color.White,
-    surface = Color.White,
+    surface = GrayLight,
     onPrimary = Black900,
     onSecondary = Black500,
     onTertiary = Black900,
@@ -41,7 +41,7 @@ private val LightColorScheme = lightColorScheme(
 fun VkNewsClientTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

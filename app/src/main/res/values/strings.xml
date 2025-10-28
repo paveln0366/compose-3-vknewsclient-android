@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Vk News Client</string>
     <string name="template_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</string>
+    <string name="navigation_item_main">Main</string>
+    <string name="navigation_item_favorite">Favorite</string>
+    <string name="navigation_item_profile">Profile</string>
 </resources>

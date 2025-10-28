@@ -14,6 +14,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,7 +32,11 @@ import com.example.vknewsclient.R
 
 @Composable
 fun PostCard() {
-    Card {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
@@ -69,18 +75,18 @@ private fun PostHeader() {
         ) {
             Text(
                 text = "/dev/null",
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "14:00",
-                color = Black500
+                color = MaterialTheme.colorScheme.onSecondary
             )
         }
         Icon(
             imageVector = Icons.Rounded.MoreVert,
             contentDescription = null,
-            tint = Black500
+            tint = MaterialTheme.colorScheme.onSecondary
         )
     }
 }
@@ -115,12 +121,12 @@ private fun IconWithText(
         Icon(
             painter = painterResource(iconResId),
             contentDescription = null,
-            tint = Black500
+            tint = MaterialTheme.colorScheme.onSecondary
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = text,
-            color = Black500
+            color = MaterialTheme.colorScheme.onSecondary
         )
     }
 }
