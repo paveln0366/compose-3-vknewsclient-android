@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.vknewsclient.domain.FeedPost
-import com.google.gson.Gson
 
 fun NavGraphBuilder.homeScreenNavGraph(
     newsFeedScreenContent: @Composable () -> Unit,
@@ -24,12 +23,12 @@ fun NavGraphBuilder.homeScreenNavGraph(
             route = Screen.Comments.route,
             arguments = listOf(
                 navArgument(Screen.KEY_FEED_POST) {
-                    type = NavType.StringType
+                    type = FeedPost.NavigationType
                 }
             )
         ) { // comments/{feed_post_id}
-            val feedPostJson = it.arguments?.getString(Screen.KEY_FEED_POST) ?: ""
-            val feedPost = Gson().fromJson(feedPostJson, FeedPost::class.java)
+            val feedPost = it.arguments?.getParcelable<FeedPost>(Screen.KEY_FEED_POST)
+                ?: throw RuntimeException("Args is null")
             commentsScreenContent(feedPost)
         }
     }
