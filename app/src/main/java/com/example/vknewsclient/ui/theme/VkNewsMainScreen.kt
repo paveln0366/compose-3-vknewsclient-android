@@ -11,24 +11,29 @@ import androidx.compose.material3.ShortNavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.vknewsclient.MainViewModel
+import com.example.vknewsclient.navigation.AppNavGraph
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
-    val selectedNavItem by viewModel.selectedNavItem.observeAsState(NavigationItem.Home)
+    val navHostController = rememberNavController()
     Scaffold(
         bottomBar = {
             ShortNavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface,
             ) {
+                val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+
                 val items = listOf(
                     NavigationItem.Home,
                     NavigationItem.Favorite,
@@ -36,8 +41,8 @@ fun MainScreen(viewModel: MainViewModel) {
                 )
                 items.forEach { item ->
                     ShortNavigationBarItem(
-                        selected = selectedNavItem == item,
-                        onClick = { viewModel.selectNavItem(item) },
+                        selected = currentRoute == item.screen.route,
+                        onClick = { navHostController.navigate(item.screen.route) },
                         icon = {
                             Icon(item.icon, contentDescription = null)
                         },
@@ -56,11 +61,17 @@ fun MainScreen(viewModel: MainViewModel) {
             }
         }
     ) { paddingValues ->
-        when (selectedNavItem) {
-            NavigationItem.Home -> HomeScreen(viewModel = viewModel, paddingValues = paddingValues)
-            NavigationItem.Favorite -> TextCounter(name = "Favorite")
-            NavigationItem.Profile -> TextCounter(name = "Profile")
-        }
+        AppNavGraph(
+            navHostController = navHostController,
+            homeScreenContent = {
+                HomeScreen(
+                    viewModel = viewModel,
+                    paddingValues = paddingValues
+                )
+            },
+            favoriteScreenContent = { TextCounter(name = "Favorite") },
+            profileScreenContent = { TextCounter(name = "Profile") }
+        )
     }
 }
 
