@@ -57,7 +57,8 @@ fun MainScreen(viewModel: MainViewModel) {
                             selectedTextColor = MaterialTheme.colorScheme.onPrimary,
                             unselectedIconColor = MaterialTheme.colorScheme.onTertiary,
                             unselectedTextColor = MaterialTheme.colorScheme.onTertiary,
-                            selectedIndicatorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
+                            selectedIndicatorColor =
+                                MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.1f)
                         )
                     )
                 }
