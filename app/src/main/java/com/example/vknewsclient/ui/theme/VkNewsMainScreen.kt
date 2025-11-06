@@ -2,6 +2,8 @@ package com.example.vknewsclient.ui.theme
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -12,7 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.vknewsclient.MainViewModel
 import com.example.vknewsclient.navigation.AppNavGraph
+import com.example.vknewsclient.navigation.Screen
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -42,7 +45,15 @@ fun MainScreen(viewModel: MainViewModel) {
                 items.forEach { item ->
                     ShortNavigationBarItem(
                         selected = currentRoute == item.screen.route,
-                        onClick = { navHostController.navigate(item.screen.route) },
+                        onClick = {
+                            navHostController.navigate(item.screen.route) {
+                                popUpTo(Screen.NewsFeed.route) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
                         icon = {
                             Icon(item.icon, contentDescription = null)
                         },
@@ -69,15 +80,23 @@ fun MainScreen(viewModel: MainViewModel) {
                     paddingValues = paddingValues
                 )
             },
-            favoriteScreenContent = { TextCounter(name = "Favorite") },
-            profileScreenContent = { TextCounter(name = "Profile") }
+            favoriteScreenContent = {
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    TextCounter(name = "Favorite")
+                }
+            },
+            profileScreenContent = {
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    TextCounter(name = "Profile")
+                }
+            }
         )
     }
 }
 
 @Composable
 private fun TextCounter(name: String) {
-    var count by remember {
+    var count by rememberSaveable {
         mutableStateOf(0)
     }
     Text(
