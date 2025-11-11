@@ -67,4 +67,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.com.google.code.gson)
     implementation(libs.io.coil.kt.coil3.compose)
+    implementation(libs.io.coil.kt.coil3.compose)
+    implementation(libs.com.vk.android.sdk.core)
+    implementation(libs.com.vk.android.sdk.api)
 }

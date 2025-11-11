@@ -1,4 +1,5 @@
 <resources>
+    <integer name="com_vk_sdk_AppId">54312982</integer>
     <string name="app_name">Vk News Client</string>
     <string name="template_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</string>
     <string name="navigation_item_main">Main</string>

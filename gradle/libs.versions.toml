@@ -13,6 +13,8 @@ navigationCompose = "2.9.6"
 lifecycleViewmodelCompose = "2.9.4"
 gson = "2.13.2"
 coilCompose = "3.3.0"
+androidSdkCore = "4.1.0"
+androidSdkApi = "4.1.0"
 
 [libraries]
 androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "runtimeLivedata" }
@@ -35,6 +37,8 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 com-google-code-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 io-coil-kt-coil3-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coilCompose" }
+com-vk-android-sdk-core = { group = "com.vk", name = "android-sdk-core", version.ref = "androidSdkCore" }
+com-vk-android-sdk-api = { group = "com.vk", name = "android-sdk-api", version.ref = "androidSdkApi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
