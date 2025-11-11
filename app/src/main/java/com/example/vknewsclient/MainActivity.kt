@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.SideEffect
 import com.example.vknewsclient.ui.theme.MainScreen
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
 import com.vk.api.sdk.VK
@@ -32,7 +33,12 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                launcher.launch(listOf(VKScope.WALL))
+//                LaunchedEffect(key1 = Unit) {
+//                    launcher.launch(listOf(VKScope.WALL))
+//                }
+                SideEffect {
+                    launcher.launch(listOf(VKScope.WALL))
+                }
                 MainScreen()
 //                ActivityResultTest()
             }
