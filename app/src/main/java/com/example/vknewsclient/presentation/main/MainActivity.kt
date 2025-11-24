@@ -1,4 +1,4 @@
-package com.example.vknewsclient
+package com.example.vknewsclient.presentation.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,10 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.vknewsclient.ui.theme.AuthState
-import com.example.vknewsclient.ui.theme.LoginScreen
-import com.example.vknewsclient.ui.theme.MainScreen
-import com.example.vknewsclient.ui.theme.MainViewModel
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
 
 class MainActivity : ComponentActivity() {
