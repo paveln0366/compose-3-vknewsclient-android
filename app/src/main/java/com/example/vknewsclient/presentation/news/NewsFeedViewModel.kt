@@ -28,8 +28,10 @@ class NewsFeedViewModel(application: Application) : AndroidViewModel(application
     private fun loadRecommendations() {
         viewModelScope.launch {
             val token = VKID.instance.accessToken?.token ?: return@launch
-            val response = ApiFactory.apiService.loadRecommendations(token)
-            val feedPosts = mapper.mapResponseToPosts(response)
+//            val response = ApiFactory.apiService.loadRecommendations(token)
+//            val feedPosts = mapper.mapResponseToPosts(response)
+            val response = ApiFactory.apiService.loadRecommendationsV2()
+            val feedPosts = mapper.mapFilmsToPosts(response)
             _screenState.value = NewsFeedScreenState.Posts(posts = feedPosts)
         }
     }

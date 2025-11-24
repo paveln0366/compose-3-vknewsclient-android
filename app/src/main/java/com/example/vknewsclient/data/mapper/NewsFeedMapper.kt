@@ -1,6 +1,7 @@
 package com.example.vknewsclient.data.mapper
 
 import com.example.vknewsclient.data.model.NewsFeedResponseDto
+import com.example.vknewsclient.data.model.kinopoisk.FilmsListDto
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
@@ -27,6 +28,32 @@ class NewsFeedMapper {
                     StatisticItem(type = StatisticType.VIEWS, post.views.count),
                     StatisticItem(type = StatisticType.SHARES, post.reposts.count),
                     StatisticItem(type = StatisticType.COMMENTS, post.comments.count)
+                )
+            )
+            result.add(feedPost)
+        }
+
+        return result
+    }
+
+    fun mapFilmsToPosts(filmsDto: FilmsListDto): List<FeedPost> {
+        val result = mutableListOf<FeedPost>()
+        val posts = filmsDto.items
+
+        for (post in posts) {
+//            if (post.posterUrlPreview == null) break // Not add to result
+            val feedPost = FeedPost(
+                id = post.kinopoiskId.toString(),
+                communityName = post.type.toString(),
+                publicationDate = post.year.toString(),
+                communityImageUrl = post.posterUrlPreview.toString(),
+                contentText = post.nameRu.toString(),
+                contentImageUrl = post.posterUrl.toString(),
+                statistics = listOf(
+                    StatisticItem(type = StatisticType.LIKES, post.ratingKinopoisk?.toInt() ?: 0),
+                    StatisticItem(type = StatisticType.VIEWS, post.ratingKinopoisk?.toInt() ?: 0),
+                    StatisticItem(type = StatisticType.SHARES, post.ratingKinopoisk?.toInt() ?: 0),
+                    StatisticItem(type = StatisticType.COMMENTS, post.ratingKinopoisk?.toInt() ?: 0)
                 )
             )
             result.add(feedPost)

@@ -15,7 +15,8 @@ object ApiFactory {
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.vk.com/method/")
+//        .baseUrl("https://api.vk.com/method/")
+        .baseUrl("https://kinopoiskapiunofficial.tech/")
         .addConverterFactory(GsonConverterFactory.create())
         .client(okHttpClient)
         .build()
