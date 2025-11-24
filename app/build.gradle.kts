@@ -1,9 +1,21 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.vkid.manifest.placeholders)
 }
+
+val localProps = Properties()
+rootProject.file("local.properties").inputStream().use { localProps.load(it) }
+
+val clientId: String = localProps.getProperty("VKIDClientID")
+    ?: error("VKIDClientID is not set in local.properties")
+val clientSecret: String = localProps.getProperty("VKIDClientSecret")
+    ?: error("VKIDClientSecret is not set in local.properties")
+
 
 android {
     namespace = "com.example.vknewsclient"
@@ -17,6 +29,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        addManifestPlaceholders(
+            mapOf(
+                "VKIDClientID" to clientId,
+                "VKIDClientSecret" to clientSecret,
+                "VKIDRedirectHost" to "vk.ru",
+                "VKIDRedirectScheme" to "vk$clientId",
+            )
+        )
     }
 
     buildTypes {
@@ -70,4 +91,5 @@ dependencies {
     implementation(libs.io.coil.kt.coil3.compose)
     implementation(libs.com.vk.android.sdk.core)
     implementation(libs.com.vk.android.sdk.api)
+    implementation(libs.vkid)
 }

@@ -2,7 +2,6 @@ package com.example.vknewsclient
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.livedata.observeAsState
@@ -12,8 +11,6 @@ import com.example.vknewsclient.ui.theme.LoginScreen
 import com.example.vknewsclient.ui.theme.MainScreen
 import com.example.vknewsclient.ui.theme.MainViewModel
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
-import com.vk.api.sdk.VK
-import com.vk.api.sdk.auth.VKScope
 
 class MainActivity : ComponentActivity() {
 
@@ -25,24 +22,25 @@ class MainActivity : ComponentActivity() {
                 val viewModel: MainViewModel = viewModel()
                 val authState = viewModel.authState.observeAsState(AuthState.Initial)
 
-                val launcher = rememberLauncherForActivityResult(
-                    contract = VK.getVKAuthActivityResultContract()
-                ) {
-                    viewModel.performAuthResult(it)
-                }
+//                val launcher = rememberLauncherForActivityResult(
+//                    contract = VK.getVKAuthActivityResultContract()
+//                ) {
+//                    viewModel.performAuthResult(it)
+//                }
 
                 when (authState.value) {
                     is AuthState.Authorized -> {
                         MainScreen()
                     }
 
-                    is AuthState.NotAuthorized -> {
+                    is AuthState.NotAuthorized, AuthState.Initial -> {
                         LoginScreen {
-                            launcher.launch(listOf(VKScope.WALL))
+                            viewModel.login()
+//                            launcher.launch(listOf(VKScope.WALL))
                         }
                     }
 
-                    else -> {}
+//                    else -> {}
                 }
             }
         }
