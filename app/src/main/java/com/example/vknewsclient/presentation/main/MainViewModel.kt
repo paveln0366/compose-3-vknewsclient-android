@@ -1,6 +1,7 @@
 package com.example.vknewsclient.presentation.main
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -42,6 +43,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         val token = VKID.instance.accessToken
+        Log.d("MainViewModel", "Token ${token?.token}")
         _authState.value = if (token != null) AuthState.Authorized else AuthState.NotAuthorized
     }
 

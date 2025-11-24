@@ -92,4 +92,10 @@ dependencies {
     implementation(libs.com.vk.android.sdk.core)
     implementation(libs.com.vk.android.sdk.api)
     implementation(libs.vkid)
+    implementation(libs.coil.compose)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
 }
