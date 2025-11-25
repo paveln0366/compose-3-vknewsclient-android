@@ -5,7 +5,11 @@ import com.example.vknewsclient.data.model.kinopoisk.FilmsListDto
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.absoluteValue
+import kotlin.random.Random
 
 class NewsFeedMapper {
 
@@ -19,7 +23,7 @@ class NewsFeedMapper {
             val feedPost = FeedPost(
                 id = post.id,
                 communityName = group.name,
-                publicationDate = post.date.toString(),
+                publicationDate = mapTimestampToDate(post.date * 1000),
                 communityImageUrl = group.imageUrl,
                 contentText = post.text,
                 contentImageUrl = post.attachments?.firstOrNull()?.photo?.photoUrls?.lastOrNull()?.url,
@@ -28,7 +32,8 @@ class NewsFeedMapper {
                     StatisticItem(type = StatisticType.VIEWS, post.views.count),
                     StatisticItem(type = StatisticType.SHARES, post.reposts.count),
                     StatisticItem(type = StatisticType.COMMENTS, post.comments.count)
-                )
+                ),
+                isFavourite = post.isFavourite
             )
             result.add(feedPost)
         }
@@ -41,24 +46,30 @@ class NewsFeedMapper {
         val posts = filmsDto.items
 
         for (post in posts) {
-//            if (post.posterUrlPreview == null) break // Not add to result
+            if (post.type == "VIDEO") continue
             val feedPost = FeedPost(
                 id = post.kinopoiskId.toString(),
                 communityName = post.type.toString(),
-                publicationDate = post.year.toString(),
+                publicationDate = mapTimestampToDate(1764074687392),
                 communityImageUrl = post.posterUrlPreview.toString(),
                 contentText = post.nameRu.toString(),
                 contentImageUrl = post.posterUrl.toString(),
                 statistics = listOf(
-                    StatisticItem(type = StatisticType.LIKES, post.ratingKinopoisk?.toInt() ?: 0),
-                    StatisticItem(type = StatisticType.VIEWS, post.ratingKinopoisk?.toInt() ?: 0),
-                    StatisticItem(type = StatisticType.SHARES, post.ratingKinopoisk?.toInt() ?: 0),
-                    StatisticItem(type = StatisticType.COMMENTS, post.ratingKinopoisk?.toInt() ?: 0)
-                )
+                    StatisticItem(type = StatisticType.LIKES, (0..300000).random()),
+                    StatisticItem(type = StatisticType.VIEWS, (0..300000).random()),
+                    StatisticItem(type = StatisticType.SHARES, (0..300000).random()),
+                    StatisticItem(type = StatisticType.COMMENTS, (0..300000).random())
+                ),
+                isFavourite = Random.nextBoolean()
             )
             result.add(feedPost)
         }
 
         return result
+    }
+
+    private fun mapTimestampToDate(timestamp: Long): String {
+        val date = Date(timestamp)
+        return SimpleDateFormat("dd MMMM yyyy, hh:mm", Locale.getDefault()).format(date)
     }
 }
