@@ -5,11 +5,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.vknewsclient.data.mapper.NewsFeedMapper
-import com.example.vknewsclient.data.network.ApiFactory
+import com.example.vknewsclient.data.repository.NewsFeedRepository
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
-import com.vk.id.VKID
 import kotlinx.coroutines.launch
 
 class NewsFeedViewModel(application: Application) : AndroidViewModel(application) {
@@ -19,7 +17,7 @@ class NewsFeedViewModel(application: Application) : AndroidViewModel(application
     private val _screenState = MutableLiveData<NewsFeedScreenState>(initialState)
     val screenState: LiveData<NewsFeedScreenState> = _screenState
 
-    private val mapper = NewsFeedMapper()
+    private val repository = NewsFeedRepository(application)
 
     init {
         loadRecommendations()
@@ -27,12 +25,15 @@ class NewsFeedViewModel(application: Application) : AndroidViewModel(application
 
     private fun loadRecommendations() {
         viewModelScope.launch {
-            val token = VKID.instance.accessToken?.token ?: return@launch
-//            val response = ApiFactory.apiService.loadRecommendations(token)
-//            val feedPosts = mapper.mapResponseToPosts(response)
-            val response = ApiFactory.apiService.loadRecommendationsV2()
-            val feedPosts = mapper.mapFilmsToPosts(response)
+            val feedPosts = repository.loadRecommendationsV2()
             _screenState.value = NewsFeedScreenState.Posts(posts = feedPosts)
+        }
+    }
+
+    fun changeLikeStatus(feedPost: FeedPost) {
+        viewModelScope.launch {
+            repository.changeLikeStatusV2(feedPost)
+            _screenState.value = NewsFeedScreenState.Posts(posts = repository.feedPosts)
         }
     }
 

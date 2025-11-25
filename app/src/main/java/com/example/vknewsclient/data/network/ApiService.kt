@@ -1,5 +1,6 @@
 package com.example.vknewsclient.data.network
 
+import com.example.vknewsclient.data.model.LikesCountResponseDto
 import com.example.vknewsclient.data.model.NewsFeedResponseDto
 import com.example.vknewsclient.data.model.kinopoisk.FilmsListDto
 import retrofit2.http.GET
@@ -19,4 +20,18 @@ interface ApiService {
         "Content-Type: application/json",
     )
     suspend fun loadRecommendationsV2(): FilmsListDto
+
+    @GET("likes.add?v=5.131&type=post")
+    suspend fun addLike(
+        @Query("access_token") token: String,
+        @Query("owner_id") ownerId: Long,
+        @Query("item_id") postId: Long
+    ): LikesCountResponseDto
+
+    @GET("likes.delete?v=5.131&type=post")
+    suspend fun deleteLike(
+        @Query("access_token") token: String,
+        @Query("owner_id") ownerId: Long,
+        @Query("item_id") postId: Long
+    ): LikesCountResponseDto
 }

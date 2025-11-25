@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.absoluteValue
-import kotlin.random.Random
 
 class NewsFeedMapper {
 
@@ -22,6 +21,7 @@ class NewsFeedMapper {
             val group = groups.find { it.id == post.communityId.absoluteValue } ?: break
             val feedPost = FeedPost(
                 id = post.id,
+                communityId = post.communityId,
                 communityName = group.name,
                 publicationDate = mapTimestampToDate(post.date * 1000),
                 communityImageUrl = group.imageUrl,
@@ -33,7 +33,7 @@ class NewsFeedMapper {
                     StatisticItem(type = StatisticType.SHARES, post.reposts.count),
                     StatisticItem(type = StatisticType.COMMENTS, post.comments.count)
                 ),
-                isFavourite = post.isFavourite
+                isLiked = post.likes.userLikes > 0
             )
             result.add(feedPost)
         }
@@ -48,7 +48,8 @@ class NewsFeedMapper {
         for (post in posts) {
             if (post.type == "VIDEO") continue
             val feedPost = FeedPost(
-                id = post.kinopoiskId.toString(),
+                id = post.kinopoiskId,
+                communityId = post.kinopoiskId,
                 communityName = post.type.toString(),
                 publicationDate = mapTimestampToDate(1764074687392),
                 communityImageUrl = post.posterUrlPreview.toString(),
@@ -60,7 +61,7 @@ class NewsFeedMapper {
                     StatisticItem(type = StatisticType.SHARES, (0..300000).random()),
                     StatisticItem(type = StatisticType.COMMENTS, (0..300000).random())
                 ),
-                isFavourite = Random.nextBoolean()
+                isLiked = false
             )
             result.add(feedPost)
         }

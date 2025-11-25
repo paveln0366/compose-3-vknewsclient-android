@@ -3,7 +3,7 @@ package com.example.vknewsclient.data.model.kinopoisk
 import com.google.gson.annotations.SerializedName
 
 class FilmDto(
-    @SerializedName("kinopoiskId") val kinopoiskId: String?,
+    @SerializedName("kinopoiskId") val kinopoiskId: Long,
     @SerializedName("type") val type: String?,
     @SerializedName("year") val year: Int?,
     @SerializedName("posterUrlPreview") val posterUrlPreview: String?,
