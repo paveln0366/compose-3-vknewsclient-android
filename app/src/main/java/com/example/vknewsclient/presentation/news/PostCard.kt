@@ -87,6 +87,7 @@ private fun PostHeader(
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape),
+            contentScale = ContentScale.Crop,
             contentDescription = null
         )
         Spacer(modifier = Modifier.width(8.dp))
