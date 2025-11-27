@@ -3,6 +3,7 @@ package com.example.vknewsclient.presentation.news
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -14,7 +15,6 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +44,15 @@ fun NewsFeedScreen(
         NewsFeedScreenState.Initial -> {
 
         }
+
+        NewsFeedScreenState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.onSecondary)
+            }
+        }
     }
 }
 
@@ -71,7 +80,7 @@ private fun FeedPosts(
         ) { feedPost ->
             val dismissState = rememberSwipeToDismissBoxState()
             if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-                viewModel.remove(feedPost)
+                viewModel.removeV2(feedPost)
             }
             SwipeToDismissBox(
                 modifier = Modifier.animateItem(),
@@ -81,12 +90,6 @@ private fun FeedPosts(
             ) {
                 PostCard(
                     feedPost = feedPost,
-                    onViewsClickListener = { statisticItem ->
-                        viewModel.updateCount(feedPost, statisticItem)
-                    },
-                    onShareClickListener = { statisticItem ->
-                        viewModel.updateCount(feedPost, statisticItem)
-                    },
                     onCommentClickListener = {
                         onCommentClickListener(feedPost)
                     },
