@@ -1,6 +1,7 @@
 package com.example.vknewsclient.data.repository
 
 import android.app.Application
+import android.util.Log
 import com.example.vknewsclient.data.mapper.NewsFeedMapper
 import com.example.vknewsclient.data.network.ApiFactory
 import com.example.vknewsclient.domain.FeedPost
@@ -8,6 +9,7 @@ import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.domain.StatisticItem
 import com.example.vknewsclient.domain.StatisticType
 import com.example.vknewsclient.extensions.mergeWith
+import com.example.vknewsclient.presentation.main.AuthState
 import com.vk.id.VKID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +24,8 @@ import kotlinx.coroutines.flow.stateIn
 
 class NewsFeedRepository(application: Application) {
 
-    private val token = VKID.instance.accessToken
+    private val token
+        get() = VKID.instance.accessToken
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private val nextDataNeededEvents = MutableSharedFlow<Unit>(replay = 1)
     private val refreshedListFlow = MutableSharedFlow<List<FeedPost>>()
@@ -73,6 +76,22 @@ class NewsFeedRepository(application: Application) {
 
     private var nextFrom: String? = null
 
+    private val checkAuthStateEvents = MutableSharedFlow<Unit>(replay = 1)
+
+    val authStateFlow = flow {
+        checkAuthStateEvents.emit(Unit)
+        checkAuthStateEvents.collect {
+            Log.d("NewsFeedRepository", "Token ${token?.token}")
+            val loggedIn = token != null
+            val authState = if (loggedIn) AuthState.Authorized else AuthState.NotAuthorized
+            emit(authState)
+        }
+    }.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.Lazily,
+        initialValue = AuthState.Initial
+    )
+
 //    val recommendations: StateFlow<List<FeedPost>> = loadedListFlow
 //        .mergeWith(refreshedListFlow)
 //        .stateIn(
@@ -91,6 +110,10 @@ class NewsFeedRepository(application: Application) {
 
     suspend fun loadNextData() {
         nextDataNeededEvents.emit(Unit)
+    }
+
+    suspend fun checkAuthState() {
+        checkAuthStateEvents.emit(Unit)
     }
 
     private fun getAccessToken(): String {
