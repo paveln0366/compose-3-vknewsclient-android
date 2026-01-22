@@ -6,6 +6,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.vknewsclient.data.repository.NewsFeedRepositoryImpl
+import com.example.vknewsclient.domain.entity.AuthState
+import com.example.vknewsclient.domain.usecase.CheckAuthStateUseCase
+import com.example.vknewsclient.domain.usecase.GetAuthStateFlowUseCase
 import com.vk.id.AccessToken
 import com.vk.id.VKID
 import com.vk.id.VKIDAuthFail
@@ -14,6 +18,10 @@ import com.vk.id.auth.VKIDAuthParams
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository = NewsFeedRepositoryImpl(application)
+    private val getAuthStateFlowUseCase = GetAuthStateFlowUseCase(repository)
+    private val checkAuthStateUseCase = CheckAuthStateUseCase(repository)
 
     private val _authState = MutableLiveData<AuthState>(AuthState.Initial)
     val authState: LiveData<AuthState> = _authState

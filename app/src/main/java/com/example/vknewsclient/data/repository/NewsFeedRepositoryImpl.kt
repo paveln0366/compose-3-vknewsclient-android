@@ -4,17 +4,17 @@ import android.app.Application
 import android.util.Log
 import com.example.vknewsclient.data.mapper.NewsFeedMapper
 import com.example.vknewsclient.data.network.ApiFactory
-import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.PostComment
-import com.example.vknewsclient.domain.StatisticItem
-import com.example.vknewsclient.domain.StatisticType
+import com.example.vknewsclient.domain.entity.AuthState
+import com.example.vknewsclient.domain.entity.FeedPost
+import com.example.vknewsclient.domain.entity.PostComment
+import com.example.vknewsclient.domain.entity.StatisticItem
+import com.example.vknewsclient.domain.entity.StatisticType
+import com.example.vknewsclient.domain.repository.NewsFeedRepository
 import com.example.vknewsclient.extensions.mergeWith
-import com.example.vknewsclient.presentation.main.AuthState
 import com.vk.id.VKID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 
-class NewsFeedRepository(application: Application) {
+class NewsFeedRepositoryImpl(application: Application) : NewsFeedRepository {
 
     private val token
         get() = VKID.instance.accessToken
@@ -78,7 +78,7 @@ class NewsFeedRepository(application: Application) {
 
     private val checkAuthStateEvents = MutableSharedFlow<Unit>(replay = 1)
 
-    val authStateFlow = flow {
+    private val authStateFlow = flow {
         checkAuthStateEvents.emit(Unit)
         checkAuthStateEvents.collect {
             Log.d("NewsFeedRepository", "Token ${token?.token}")
@@ -92,7 +92,7 @@ class NewsFeedRepository(application: Application) {
         initialValue = AuthState.Initial
     )
 
-//    val recommendations: StateFlow<List<FeedPost>> = loadedListFlow
+//    private val recommendations: StateFlow<List<FeedPost>> = loadedListFlow
 //        .mergeWith(refreshedListFlow)
 //        .stateIn(
 //            scope = coroutineScope,
@@ -100,7 +100,7 @@ class NewsFeedRepository(application: Application) {
 //            initialValue = feedPosts
 //        )
 
-    val recommendationsV2: StateFlow<List<FeedPost>> = loadedListFlowV2
+    private val recommendationsV2: StateFlow<List<FeedPost>> = loadedListFlowV2
         .mergeWith(refreshedListFlow)
         .stateIn(
             scope = coroutineScope,
@@ -108,11 +108,15 @@ class NewsFeedRepository(application: Application) {
             initialValue = feedPosts
         )
 
-    suspend fun loadNextData() {
+    override fun getAuthStateFlow(): StateFlow<AuthState> = authStateFlow
+
+    override fun getRecommendations(): StateFlow<List<FeedPost>> = recommendationsV2
+
+    override suspend fun loadNextData() {
         nextDataNeededEvents.emit(Unit)
     }
 
-    suspend fun checkAuthState() {
+    override suspend fun checkAuthState() {
         checkAuthStateEvents.emit(Unit)
     }
 
@@ -120,67 +124,75 @@ class NewsFeedRepository(application: Application) {
         return token?.token ?: throw IllegalStateException("Token is null")
     }
 
-    suspend fun deletePost(feedPost: FeedPost) {
-        apiService.ignorePost(
-            accessToken = getAccessToken(),
-            ownerId = feedPost.communityId,
-            postId = feedPost.id
-        )
+//    override suspend fun deletePostV1(feedPost: FeedPost) {
+//        apiService.ignorePost(
+//            accessToken = getAccessToken(),
+//            ownerId = feedPost.communityId,
+//            postId = feedPost.id
+//        )
+//        _feedPosts.remove(feedPost)
+//        refreshedListFlow.emit(feedPosts)
+//    }
+
+    override suspend fun deletePost(feedPost: FeedPost) {
         _feedPosts.remove(feedPost)
         refreshedListFlow.emit(feedPosts)
     }
 
-    suspend fun deletePostV2(feedPost: FeedPost) {
-        _feedPosts.remove(feedPost)
-        refreshedListFlow.emit(feedPosts)
-    }
+//    override fun getCommentsV1(feedPost: FeedPost): StateFlow<List<PostComment>> = flow {
+//        val comments = apiService.getComments(
+//            accessToken = getAccessToken(),
+//            ownerId = feedPost.communityId,
+//            postId = feedPost.id
+//        )
+//        emit(mapper.mapResponseToComments(comments))
+//    }.retry {
+//        delay(RETRY_TIMEOUT_MILLIS)
+//        true
+//    }.stateIn(
+//        scope = coroutineScope,
+//        started = SharingStarted.Lazily,
+//        initialValue = listOf()
+//    )
 
-    fun getComments(feedPost: FeedPost): Flow<List<PostComment>> = flow {
-        val comments = apiService.getComments(
-            accessToken = getAccessToken(),
-            ownerId = feedPost.communityId,
-            postId = feedPost.id
-        )
-        emit(mapper.mapResponseToComments(comments))
-    }.retry {
-        delay(RETRY_TIMEOUT_MILLIS)
-        true
-    }
-
-    fun getCommentsV2(feedPost: FeedPost): Flow<List<PostComment>> = flow {
+    override fun getComments(feedPost: FeedPost): StateFlow<List<PostComment>> = flow {
         val comments = apiService.getCommentsV2(id = feedPost.id)
         emit(mapper.mapResponseToCommentsV2(comments))
     }.retry {
         delay(RETRY_TIMEOUT_MILLIS)
         true
-    }
+    }.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.Lazily,
+        initialValue = listOf()
+    )
 
-    suspend fun changeLikeStatus(feedPost: FeedPost) {
-        val response = if (feedPost.isLiked) {
-            apiService.deleteLike(
-                token = getAccessToken(),
-                ownerId = feedPost.communityId,
-                postId = feedPost.id
-            )
-        } else {
-            apiService.addLike(
-                token = getAccessToken(),
-                ownerId = feedPost.communityId,
-                postId = feedPost.id
-            )
-        }
-        val newLikesCount = response.likes.count
-        val newStatistics = feedPost.statistics.toMutableList().apply {
-            removeIf { it.type == StatisticType.LIKES }
-            add(StatisticItem(type = StatisticType.LIKES, newLikesCount))
-        }
-        val newPost = feedPost.copy(statistics = newStatistics, isLiked = !feedPost.isLiked)
-        val postIndex = _feedPosts.indexOf(feedPost)
-        _feedPosts[postIndex] = newPost
-        refreshedListFlow.emit(feedPosts)
-    }
+//    override suspend fun changeLikeStatusV1(feedPost: FeedPost) {
+//        val response = if (feedPost.isLiked) {
+//            apiService.deleteLike(
+//                token = getAccessToken(),
+//                ownerId = feedPost.communityId,
+//                postId = feedPost.id
+//            )
+//        } else {
+//            apiService.addLike(
+//                token = getAccessToken(),
+//                ownerId = feedPost.communityId,
+//                postId = feedPost.id
+//            )
+//        }
+//        val newLikesCount = response.likes.count
+//        val newStatistics = feedPost.statistics.toMutableList().apply {
+//            removeIf { it.type == StatisticType.LIKES }
+//            add(StatisticItem(type = StatisticType.LIKES, newLikesCount))
+//        }
+//        val newPost = feedPost.copy(statistics = newStatistics, isLiked = !feedPost.isLiked)
+//        val postIndex = _feedPosts.indexOf(feedPost)
+//        _feedPosts[postIndex] = newPost
+//        refreshedListFlow.emit(feedPosts)
+//    }
 
-    suspend fun changeLikeStatusV2(feedPost: FeedPost) {
+    override suspend fun changeLikeStatus(feedPost: FeedPost) {
         val newLikesCount = if (feedPost.isLiked) 0 else 1
         val newStatistics = feedPost.statistics.toMutableList().apply {
             removeIf { it.type == StatisticType.LIKES }
