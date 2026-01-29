@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.vkid.manifest.placeholders)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 val localProps = Properties()
@@ -98,4 +99,6 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
 }
