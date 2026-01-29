@@ -1,11 +1,13 @@
 package com.example.vknewsclient.domain.entity
 
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
 import androidx.navigation.NavType
 import androidx.savedstate.SavedState
 import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 
+@Immutable
 @Parcelize
 data class FeedPost(
     val id: Long,
